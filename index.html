@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>대림절 말씀 배경화면 만들기 | 온미니스트리</title>
+<meta name="description" content="대림절 묵상 노트의 오늘 그림과 말씀으로 나만의 배경화면 · 스토리를 만들어요.">
+<meta property="og:title" content="대림절 말씀 배경화면 만들기">
+<meta property="og:description" content="오늘의 그림과 말씀으로 나만의 배경화면 · 스토리를 만들어요. — 온미니스트리">
+<meta property="og:image" content="https://advent.onministry.co.kr/img/og.jpg">
+<meta property="og:url" content="https://advent.onministry.co.kr/">
+<meta name="theme-color" content="#1d1640">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Serif+KR:wght@500;700&family=Gowun+Batang:wght@700&family=Nanum+Pen+Script&family=Jua&family=Song+Myung&display=swap">
+<style>
+:root{--bg:#1d1640;--card:#2a2158;--line:#3d3277;--ink:#f4f0ff;--sub:#b9b0dc;--gold:#f2c46d}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:"Noto Sans KR",system-ui,sans-serif}
+.wrap{max-width:460px;margin:0 auto;padding:14px 16px 40px}
+header{margin:2px 2px 12px}
+header .day{font-size:12px;letter-spacing:.14em;color:var(--gold)}
+header h1{font-family:"Noto Serif KR",serif;font-size:20px;margin:4px 0 2px}
+header p{margin:0;font-size:13px;color:var(--sub)}
+.stage{position:relative;border-radius:14px;overflow:hidden;background:#000;touch-action:none;user-select:none;margin:0 auto}
+.stage canvas{display:block;width:100%;height:auto}
+.hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:12px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);pointer-events:none;transition:opacity .4s}
+.tabs{display:flex;gap:4px;margin:14px 0 0;background:var(--card);border-radius:12px;padding:4px}
+.tabs button{flex:1;border:none;background:none;color:var(--sub);font-family:inherit;font-size:14px;padding:9px 0;border-radius:9px;cursor:pointer}
+.tabs button.on{background:var(--gold);color:#2a1c00;font-weight:700}
+.panel{padding:6px 2px 0;min-height:150px}
+.lead{font-size:13px;color:var(--sub);margin:10px 0 4px}
+.row{display:flex;align-items:center;gap:10px;margin:10px 0}
+.row label{width:72px;font-size:13px;color:var(--sub);flex:none}
+input[type=range]{flex:1;accent-color:var(--gold)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:8px 13px;font-size:14px;font-family:inherit;cursor:pointer}
+.chip.on{border-color:var(--gold);background:rgba(242,196,109,.16);color:var(--gold)}
+.tg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+.tg button{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;cursor:pointer;text-align:left}
+.tg button i{width:18px;height:18px;border-radius:5px;border:2px solid var(--line);flex:none;position:relative}
+.tg button.on{border-color:var(--gold)}
+.tg button.on i{background:var(--gold);border-color:var(--gold)}
+.tg button.on i:after{content:"";position:absolute;left:4px;top:0;width:5px;height:10px;border:solid #2a1c00;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.sec{font-size:12px;letter-spacing:.08em;color:var(--gold);margin:16px 0 2px}
+.sw{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.sw button{border:2px solid transparent;border-radius:10px;padding:0;background:none;cursor:pointer;color:var(--ink);font-family:inherit;font-size:12px}
+.sw button canvas{width:100%;border-radius:8px;display:block}
+.sw button span{display:block;padding:4px 0 2px}
+.sw button.on{border-color:var(--gold)}
+textarea{width:100%;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit;line-height:1.6;resize:vertical;margin-top:4px}
+textarea::placeholder{color:#857bb3}
+.nav{display:flex;gap:10px;margin-top:18px}
+.btn{flex:1;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;cursor:pointer}
+.btn.p{background:var(--gold);color:#2a1c00}
+.btn.s{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.msg{font-size:13px;color:var(--sub);text-align:center;margin-top:10px;min-height:18px}
+.hide{display:none}
+.sheet.hide{display:none}
+.dnav{display:flex;align-items:center;gap:10px}
+.dnav button{width:30px;height:30px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--gold);font-size:18px;line-height:1;cursor:pointer;flex:none}
+.dnav button:disabled{opacity:.3}
+footer{margin-top:28px;font-size:12px;line-height:1.7;color:var(--sub);text-align:center}
+footer a{color:var(--gold);text-decoration:none;font-weight:700}
+.vlist{display:flex;flex-direction:column;gap:8px;margin:8px 0}
+.vlist button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:14px;line-height:1.6;font-family:inherit;text-align:left;cursor:pointer}
+.vlist button b{display:block;font-size:12px;color:var(--gold);font-weight:500;margin-bottom:2px}
+.vlist button.on{border-color:var(--gold);background:rgba(242,196,109,.12)}
+.small{font-size:12px;color:var(--sub);margin-top:4px}
+.sheet{position:fixed;inset:0;background:rgba(10,6,28,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:9}
+.sheet img{max-width:100%;max-height:72vh;border-radius:12px}
+.sheet p{font-size:14px;color:var(--ink);margin:14px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="dnav"><button id="prev" aria-label="이전 날">‹</button><div class="day" id="hday"></div><button id="next" aria-label="다음 날">›</button></div>
+    <h1 id="htitle"></h1>
+    <p>오늘의 그림으로 나만의 배경화면 · 스토리를 만들어요.</p>
+  </header>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="hint" id="hint"></div></div>
+  <div class="tabs" id="tabs"></div>
+  <div class="panel" id="panel"></div>
+  <div class="nav"><button class="btn s" id="reset">처음으로</button><button class="btn p" id="save">저장하기</button></div>
+  <div class="msg" id="msg"></div>
+  <footer>
+    <a href="https://www.onministry.co.kr">ON MINISTRY</a> · 대림절 묵상 노트와 함께 쓰는 도구<br>
+    성경 본문: 성경전서 개역개정판 © 대한성서공회
+  </footer>
+</div>
+<div class="sheet hide" id="sheet"><img id="final" alt="완성된 그림"><p id="sheetmsg">그림을 길게 눌러 저장해 주세요.</p><button class="btn s" style="flex:none;padding:12px 28px" id="close">닫기</button></div>
+
+<script>
+const DAYS = [{"n": 1, "m": 11, "d": 29, "wk": 1, "theme": "소망", "title": "어둠 속에 비친 큰 빛", "ref": "이사야 9:2, 6-7", "key": 2, "vs": [{"ref": "이사야 9:2", "t": "흑암에 행하던 백성이 큰 빛을 보고 사망의 그늘진 땅에 거주하던 자에게 빛이 비치도다"}, {"ref": "이사야 9:6", "t": "이는 한 아기가 우리에게 났고 한 아들을 우리에게 주신 바 되었는데 그의 어깨에는 정사를 메었고 그의 이름은 기묘자라, 모사라, 전능하신 하나님이라, 영존하시는 아버지라, 평강의 왕이라 할 것임이라"}, {"ref": "이사야 9:7", "t": "그 정사와 평강의 더함이 무궁하며 또 다윗의 왕좌와 그의 나라에 군림하여 그 나라를 굳게 세우고 지금 이후로 영원히 정의와 공의로 그것을 보존하실 것이라 만군의 여호와의 열심이 이를 이루시리라"}]}, {"n": 2, "m": 11, "d": 30, "wk": 1, "theme": "소망", "title": "하나님이 친히 주시는 징조", "ref": "이사야 7:10-14", "key": 14, "vs": [{"ref": "이사야 7:10", "t": "여호와께서 또 아하스에게 말씀하여 이르시되"}, {"ref": "이사야 7:11", "t": "너는 네 하나님 여호와께 한 징조를 구하되 깊은 데에서든지 높은 데에서든지 구하라 하시니"}, {"ref": "이사야 7:12", "t": "아하스가 이르되 나는 구하지 아니하겠나이다 나는 여호와를 시험하지 아니하겠나이다 한지라"}, {"ref": "이사야 7:13", "t": "이사야가 이르되 다윗의 집이여 원하건대 들을지어다 너희가 사람을 괴롭히고서 그것을 작은 일로 여겨 또 나의 하나님을 괴롭히려 하느냐"}, {"ref": "이사야 7:14", "t": "그러므로 주께서 친히 징조를 너희에게 주실 것이라 보라 처녀가 잉태하여 아들을 낳을 것이요 그의 이름을 임마누엘이라 하리라"}]}, {"n": 3, "m": 12, "d": 1, "wk": 1, "theme": "소망", "title": "다윗에게서 나는 의로운 가지", "ref": "예레미야 23:3-6", "key": 5, "vs": [{"ref": "예레미야 23:3", "t": "내가 내 양 떼의 남은 것을 그 몰려 갔던 모든 지방에서 모아 다시 그 우리로 돌아오게 하리니 그들의 생육이 번성할 것이며"}, {"ref": "예레미야 23:4", "t": "내가 그들을 기르는 목자들을 그들 위에 세우리니 그들이 다시는 두려워하거나 놀라거나 잃어 버리지 아니하리라 여호와의 말씀이니라"}, {"ref": "예레미야 23:5", "t": "여호와의 말씀이니라 보라 때가 이르리니 내가 다윗에게 한 의로운 가지를 일으킬 것이라 그가 왕이 되어 지혜롭게 다스리며 세상에서 정의와 공의를 행할 것이며"}, {"ref": "예레미야 23:6", "t": "그의 날에 유다는 구원을 받겠고 이스라엘은 평안히 살 것이며 그의 이름은 여호와 우리의 공의라 일컬음을 받으리라"}]}, {"n": 4, "m": 12, "d": 2, "wk": 1, "theme": "소망", "title": "작은 베들레헴에서", "ref": "미가 5:2-5", "key": 2, "vs": [{"ref": "미가 5:2", "t": "베들레헴 에브라다야 너는 유다 족속 중에 작을지라도 이스라엘을 다스릴 자가 네게서 내게로 나올 것이라 그의 근본은 상고에, 영원에 있느니라"}, {"ref": "미가 5:3", "t": "그러므로 여인이 해산하기까지 그들을 붙여 두시겠고 그 후에는 그의 형제 가운데에 남은 자가 이스라엘 자손에게로 돌아오리니"}, {"ref": "미가 5:4", "t": "그가 여호와의 능력과 그의 하나님 여호와의 이름의 위엄을 의지하고 서서 목축하니 그들이 거주할 것이라 이제 그가 창대하여 땅 끝까지 미치리라"}, {"ref": "미가 5:5", "t": "이 사람은 평강이 될 것이라 앗수르 사람이 우리 땅에 들어와서 우리 궁들을 밟을 때에는 우리가 일곱 목자와 여덟 군왕을 일으켜 그를 치리니"}]}, {"n": 5, "m": 12, "d": 3, "wk": 1, "theme": "소망", "title": "길을 예비하라", "ref": "이사야 40:1-5", "key": 3, "vs": [{"ref": "이사야 40:1", "t": "너희의 하나님이 이르시되 너희는 위로하라 내 백성을 위로하라"}, {"ref": "이사야 40:2", "t": "너희는 예루살렘의 마음에 닿도록 말하며 그것에게 외치라 그 노역의 때가 끝났고 그 죄악이 사함을 받았느니라 그의 모든 죄로 말미암아 여호와의 손에서 벌을 배나 받았느니라 할지니라 하시니라"}, {"ref": "이사야 40:3", "t": "외치는 자의 소리여 이르되 너희는 광야에서 여호와의 길을 예비하라 사막에서 우리 하나님의 대로를 평탄하게 하라"}, {"ref": "이사야 40:4", "t": "골짜기마다 돋우어지며 산마다, 언덕마다 낮아지며 고르지 아니한 곳이 평탄하게 되며 험한 곳이 평지가 될 것이요"}, {"ref": "이사야 40:5", "t": "여호와의 영광이 나타나고 모든 육체가 그것을 함께 보리라 이는 여호와의 입이 말씀하셨느니라"}]}, {"n": 6, "m": 12, "d": 4, "wk": 1, "theme": "소망", "title": "좋은 소식을 전하는 발", "ref": "이사야 52:7-10", "key": 7, "vs": [{"ref": "이사야 52:7", "t": "좋은 소식을 전하며 평화를 공포하며 복된 좋은 소식을 가져오며 구원을 공포하며 시온을 향하여 이르기를 네 하나님이 통치하신다 하는 자의 산을 넘는 발이 어찌 그리 아름다운가"}, {"ref": "이사야 52:8", "t": "네 파수꾼들의 소리로다 그들이 소리를 높여 일제히 노래하니 이는 여호와께서 시온으로 돌아오실 때에 그들의 눈이 마주 보리로다"}, {"ref": "이사야 52:9", "t": "너 예루살렘의 황폐한 곳들아 기쁜 소리를 내어 함께 노래할지어다 이는 여호와께서 그의 백성을 위로하셨고 예루살렘을 구속하셨음이라"}, {"ref": "이사야 52:10", "t": "여호와께서 열방의 목전에서 그의 거룩한 팔을 나타내셨으므로 땅 끝까지도 모두 우리 하나님의 구원을 보았도다"}]}, {"n": 7, "m": 12, "d": 5, "wk": 1, "theme": "소망", "title": "일어나라, 빛을 발하라", "ref": "이사야 60:1-5", "key": 1, "vs": [{"ref": "이사야 60:1", "t": "일어나라 빛을 발하라 이는 네 빛이 이르렀고 여호와의 영광이 네 위에 임하였음이니라"}, {"ref": "이사야 60:2", "t": "보라 어둠이 땅을 덮을 것이며 캄캄함이 만민을 가리려니와 오직 여호와께서 네 위에 임하실 것이며 그의 영광이 네 위에 나타나리니"}, {"ref": "이사야 60:3", "t": "나라들은 네 빛으로, 왕들은 비치는 네 광명으로 나아오리라"}, {"ref": "이사야 60:4", "t": "네 눈을 들어 사방을 보라 무리가 다 모여 네게로 오느니라 네 아들들은 먼 곳에서 오겠고 네 딸들은 안기어 올 것이라"}, {"ref": "이사야 60:5", "t": "그 때에 네가 보고 기쁜 빛을 내며 네 마음이 놀라고 또 화창하리니 이는 바다의 부가 네게로 돌아오며 이방 나라들의 재물이 네게로 옴이라"}]}, {"n": 8, "m": 12, "d": 6, "wk": 2, "theme": "평화", "title": "그루터기에서 돋는 싹", "ref": "이사야 11:1, 6-9", "key": 1, "vs": [{"ref": "이사야 11:1", "t": "이새의 줄기에서 한 싹이 나며 그 뿌리에서 한 가지가 나서 결실할 것이요"}, {"ref": "이사야 11:6", "t": "그 때에 이리가 어린 양과 함께 살며 표범이 어린 염소와 함께 누우며 송아지와 어린 사자와 살진 짐승이 함께 있어 어린 아이에게 끌리며"}, {"ref": "이사야 11:7", "t": "암소와 곰이 함께 먹으며 그것들의 새끼가 함께 엎드리며 사자가 소처럼 풀을 먹을 것이며"}, {"ref": "이사야 11:8", "t": "젖 먹는 아이가 독사의 구멍에서 장난하며 젖 뗀 어린 아이가 독사의 굴에 손을 넣을 것이라"}, {"ref": "이사야 11:9", "t": "내 거룩한 산 모든 곳에서 해 됨도 없고 상함도 없을 것이니 이는 물이 바다를 덮음 같이 여호와를 아는 지식이 세상에 충만할 것임이니라"}]}, {"n": 9, "m": 12, "d": 7, "wk": 2, "theme": "평화", "title": "의로운 해가 떠올라", "ref": "말라기 4:2, 5-6", "key": 2, "vs": [{"ref": "말라기 4:2", "t": "내 이름을 경외하는 너희에게는 공의로운 해가 떠올라서 치료하는 광선을 비추리니 너희가 나가서 외양간에서 나온 송아지 같이 뛰리라"}, {"ref": "말라기 4:5", "t": "보라 여호와의 크고 두려운 날이 이르기 전에 내가 선지자 엘리야를 너희에게 보내리니"}, {"ref": "말라기 4:6", "t": "그가 아버지의 마음을 자녀에게로 돌이키게 하고 자녀들의 마음을 그들의 아버지에게로 돌이키게 하리라 돌이키지 아니하면 두렵건대 내가 와서 저주로 그 땅을 칠까 하노라 하시니라"}]}, {"n": 10, "m": 12, "d": 8, "wk": 2, "theme": "평화", "title": "사가랴에게 온 천사", "ref": "누가복음 1:11-17", "key": 13, "vs": [{"ref": "누가복음 1:11", "t": "주의 사자가 그에게 나타나 향단 우편에 선지라"}, {"ref": "누가복음 1:12", "t": "사가랴가 보고 놀라며 무서워하니"}, {"ref": "누가복음 1:13", "t": "천사가 그에게 이르되 사가랴여 무서워하지 말라 너의 간구함이 들린지라 네 아내 엘리사벳이 네게 아들을 낳아 주리니 그 이름을 요한이라 하라"}, {"ref": "누가복음 1:14", "t": "너도 기뻐하고 즐거워할 것이요 많은 사람도 그의 태어남을 기뻐하리니"}, {"ref": "누가복음 1:15", "t": "이는 그가 주 앞에 큰 자가 되며 포도주나 독한 술을 마시지 아니하며 모태로부터 성령의 충만함을 받아"}, {"ref": "누가복음 1:16", "t": "이스라엘 자손을 주 곧 그들의 하나님께로 많이 돌아오게 하겠음이라"}, {"ref": "누가복음 1:17", "t": "그가 또 엘리야의 심령과 능력으로 주 앞에 먼저 와서 아버지의 마음을 자식에게, 거스르는 자를 의인의 슬기에 돌아오게 하고 주를 위하여 세운 백성을 준비하리라"}]}, {"n": 11, "m": 12, "d": 9, "wk": 2, "theme": "평화", "title": "의심과 침묵, 그리고 엘리사벳", "ref": "누가복음 1:18-20, 24-25", "key": 25, "vs": [{"ref": "누가복음 1:18", "t": "사가랴가 천사에게 이르되 내가 이것을 어떻게 알리요 내가 늙고 아내도 나이가 많으니이다"}, {"ref": "누가복음 1:19", "t": "천사가 대답하여 이르되 나는 하나님 앞에 서 있는 가브리엘이라 이 좋은 소식을 전하여 네게 말하라고 보내심을 받았노라"}, {"ref": "누가복음 1:20", "t": "보라 이 일이 되는 날까지 네가 말 못하는 자가 되어 능히 말을 못하리니 이는 네가 내 말을 믿지 아니함이거니와 때가 이르면 내 말이 이루어지리라 하더라"}, {"ref": "누가복음 1:24", "t": "이 후에 그의 아내 엘리사벳이 잉태하고 다섯 달 동안 숨어 있으며 이르되"}, {"ref": "누가복음 1:25", "t": "주께서 나를 돌보시는 날에 사람들 앞에서 내 부끄러움을 없게 하시려고 이렇게 행하심이라 하더라"}]}, {"n": 12, "m": 12, "d": 10, "wk": 2, "theme": "평화", "title": "은혜를 받은 자여", "ref": "누가복음 1:28-33", "key": 28, "vs": [{"ref": "누가복음 1:28", "t": "그에게 들어가 이르되 은혜를 받은 자여 평안할지어다 주께서 너와 함께 하시도다 하니"}, {"ref": "누가복음 1:29", "t": "처녀가 그 말을 듣고 놀라 이런 인사가 어찌함인가 생각하매"}, {"ref": "누가복음 1:30", "t": "천사가 이르되 마리아여 무서워하지 말라 네가 하나님께 은혜를 입었느니라"}, {"ref": "누가복음 1:31", "t": "보라 네가 잉태하여 아들을 낳으리니 그 이름을 예수라 하라"}, {"ref": "누가복음 1:32", "t": "그가 큰 자가 되고 지극히 높으신 이의 아들이라 일컬어질 것이요 주 하나님께서 그 조상 다윗의 왕위를 그에게 주시리니"}, {"ref": "누가복음 1:33", "t": "영원히 야곱의 집을 왕으로 다스리실 것이며 그 나라가 무궁하리라"}]}, {"n": 13, "m": 12, "d": 11, "wk": 2, "theme": "평화", "title": "말씀대로 내게 이루어지이다", "ref": "누가복음 1:34-38", "key": 38, "vs": [{"ref": "누가복음 1:34", "t": "마리아가 천사에게 말하되 나는 남자를 알지 못하니 어찌 이 일이 있으리이까"}, {"ref": "누가복음 1:35", "t": "천사가 대답하여 이르되 성령이 네게 임하시고 지극히 높으신 이의 능력이 너를 덮으시리니 이러므로 나실 바 거룩한 이는 하나님의 아들이라 일컬어지리라"}, {"ref": "누가복음 1:36", "t": "보라 네 친족 엘리사벳도 늙어서 아들을 배었느니라 본래 임신하지 못한다고 알려진 이가 이미 여섯 달이 되었나니"}, {"ref": "누가복음 1:37", "t": "대저 하나님의 모든 말씀은 능하지 못하심이 없느니라"}, {"ref": "누가복음 1:38", "t": "마리아가 이르되 주의 여종이오니 말씀대로 내게 이루어지이다 하매 천사가 떠나가니라"}]}, {"n": 14, "m": 12, "d": 12, "wk": 2, "theme": "평화", "title": "마리아와 엘리사벳", "ref": "누가복음 1:39-45", "key": 45, "vs": [{"ref": "누가복음 1:39", "t": "이 때에 마리아가 일어나 빨리 산골로 가서 유대 한 동네에 이르러"}, {"ref": "누가복음 1:40", "t": "사가랴의 집에 들어가 엘리사벳에게 문안하니"}, {"ref": "누가복음 1:41", "t": "엘리사벳이 마리아가 문안함을 들으매 아이가 복중에서 뛰노는지라 엘리사벳이 성령의 충만함을 받아"}, {"ref": "누가복음 1:42", "t": "큰 소리로 불러 이르되 여자 중에 네가 복이 있으며 네 태중의 아이도 복이 있도다"}, {"ref": "누가복음 1:43", "t": "내 주의 어머니가 내게 나아오니 이 어찌 된 일인가"}, {"ref": "누가복음 1:44", "t": "보라 네 문안하는 소리가 내 귀에 들릴 때에 아이가 내 복중에서 기쁨으로 뛰놀았도다"}, {"ref": "누가복음 1:45", "t": "주께서 하신 말씀이 반드시 이루어지리라고 믿은 그 여자에게 복이 있도다"}]}, {"n": 15, "m": 12, "d": 13, "wk": 3, "theme": "기쁨", "title": "마리아의 노래", "ref": "누가복음 1:46-55", "key": 46, "vs": [{"ref": "누가복음 1:46", "t": "마리아가 이르되 내 영혼이 주를 찬양하며"}, {"ref": "누가복음 1:47", "t": "내 마음이 하나님 내 구주를 기뻐하였음은"}, {"ref": "누가복음 1:48", "t": "그의 여종의 비천함을 돌보셨음이라 보라 이제 후로는 만세에 나를 복이 있다 일컬으리로다"}, {"ref": "누가복음 1:49", "t": "능하신 이가 큰 일을 내게 행하셨으니 그 이름이 거룩하시며"}, {"ref": "누가복음 1:50", "t": "긍휼하심이 두려워하는 자에게 대대로 이르는도다"}, {"ref": "누가복음 1:51", "t": "그의 팔로 힘을 보이사 마음의 생각이 교만한 자들을 흩으셨고"}, {"ref": "누가복음 1:52", "t": "권세 있는 자를 그 위에서 내리치셨으며 비천한 자를 높이셨고"}, {"ref": "누가복음 1:53", "t": "주리는 자를 좋은 것으로 배불리셨으며 부자는 빈 손으로 보내셨도다"}, {"ref": "누가복음 1:54", "t": "그 종 이스라엘을 도우사 긍휼히 여기시고 기억하시되"}, {"ref": "누가복음 1:55", "t": "우리 조상에게 말씀하신 것과 같이 아브라함과 그 자손에게 영원히 하시리로다 하니라"}]}, {"n": 16, "m": 12, "d": 14, "wk": 3, "theme": "기쁨", "title": "그 이름은 요한이라", "ref": "누가복음 1:57-64", "key": 64, "vs": [{"ref": "누가복음 1:57", "t": "엘리사벳이 해산할 기한이 차서 아들을 낳으니"}, {"ref": "누가복음 1:58", "t": "이웃과 친족이 주께서 그를 크게 긍휼히 여기심을 듣고 함께 즐거워하더라"}, {"ref": "누가복음 1:59", "t": "팔 일이 되매 아이를 할례하러 와서 그 아버지의 이름을 따라 사가랴라 하고자 하더니"}, {"ref": "누가복음 1:60", "t": "그 어머니가 대답하여 이르되 아니라 요한이라 할 것이라 하매"}, {"ref": "누가복음 1:61", "t": "그들이 이르되 네 친족 중에 이 이름으로 이름한 이가 없다 하고"}, {"ref": "누가복음 1:62", "t": "그의 아버지께 몸짓하여 무엇으로 이름을 지으려 하는가 물으니"}, {"ref": "누가복음 1:63", "t": "그가 서판을 달라 하여 그 이름을 요한이라 쓰매 다 놀랍게 여기더라"}, {"ref": "누가복음 1:64", "t": "이에 그 입이 곧 열리고 혀가 풀리며 말을 하여 하나님을 찬송하니"}]}, {"n": 17, "m": 12, "d": 15, "wk": 3, "theme": "기쁨", "title": "돋는 해가 우리에게 임하여", "ref": "누가복음 1:67-69, 76-79", "key": 79, "vs": [{"ref": "누가복음 1:67", "t": "그 부친 사가랴가 성령의 충만함을 받아 예언하여 이르되"}, {"ref": "누가복음 1:68", "t": "찬송하리로다 주 이스라엘의 하나님이여 그 백성을 돌보사 속량하시며"}, {"ref": "누가복음 1:69", "t": "우리를 위하여 구원의 뿔을 그 종 다윗의 집에 일으키셨으니"}, {"ref": "누가복음 1:76", "t": "이 아이여 네가 지극히 높으신 이의 선지자라 일컬음을 받고 주 앞에 앞서 가서 그 길을 준비하여"}, {"ref": "누가복음 1:77", "t": "주의 백성에게 그 죄 사함으로 말미암는 구원을 알게 하리니"}, {"ref": "누가복음 1:78", "t": "이는 우리 하나님의 긍휼로 인함이라 이로써 돋는 해가 위로부터 우리에게 임하여"}, {"ref": "누가복음 1:79", "t": "어둠과 죽음의 그늘에 앉은 자에게 비치고 우리 발을 평강의 길로 인도하시리로다 하니라"}]}, {"n": 18, "m": 12, "d": 16, "wk": 3, "theme": "기쁨", "title": "요셉의 고민", "ref": "마태복음 1:18-21", "key": 21, "vs": [{"ref": "마태복음 1:18", "t": "예수 그리스도의 나심은 이러하니라 그의 어머니 마리아가 요셉과 약혼하고 동거하기 전에 성령으로 잉태된 것이 나타났더니"}, {"ref": "마태복음 1:19", "t": "그의 남편 요셉은 의로운 사람이라 그를 드러내지 아니하고 가만히 끊고자 하여"}, {"ref": "마태복음 1:20", "t": "이 일을 생각할 때에 주의 사자가 현몽하여 이르되 다윗의 자손 요셉아 네 아내 마리아 데려오기를 무서워하지 말라 그에게 잉태된 자는 성령으로 된 것이라"}, {"ref": "마태복음 1:21", "t": "아들을 낳으리니 이름을 예수라 하라 이는 그가 자기 백성을 그들의 죄에서 구원할 자이심이라 하니라"}]}, {"n": 19, "m": 12, "d": 17, "wk": 3, "theme": "기쁨", "title": "임마누엘, 하나님이 우리와 함께", "ref": "마태복음 1:22-25", "key": 23, "vs": [{"ref": "마태복음 1:22", "t": "이 모든 일이 된 것은 주께서 선지자로 하신 말씀을 이루려 하심이니 이르시되"}, {"ref": "마태복음 1:23", "t": "보라 처녀가 잉태하여 아들을 낳을 것이요 그의 이름은 임마누엘이라 하리라 하셨으니 이를 번역한즉 하나님이 우리와 함께 계시다 함이라"}, {"ref": "마태복음 1:24", "t": "요셉이 잠에서 깨어 일어나 주의 사자의 분부대로 행하여 그의 아내를 데려왔으나"}, {"ref": "마태복음 1:25", "t": "아들을 낳기까지 동침하지 아니하더니 낳으매 이름을 예수라 하니라"}]}, {"n": 20, "m": 12, "d": 18, "wk": 3, "theme": "기쁨", "title": "빛이 어둠에 비치되", "ref": "요한복음 1:1-8", "key": 5, "vs": [{"ref": "요한복음 1:1", "t": "태초에 말씀이 계시니라 이 말씀이 하나님과 함께 계셨으니 이 말씀은 곧 하나님이시니라"}, {"ref": "요한복음 1:2", "t": "그가 태초에 하나님과 함께 계셨고"}, {"ref": "요한복음 1:3", "t": "만물이 그로 말미암아 지은 바 되었으니 지은 것이 하나도 그가 없이는 된 것이 없느니라"}, {"ref": "요한복음 1:4", "t": "그 안에 생명이 있었으니 이 생명은 사람들의 빛이라"}, {"ref": "요한복음 1:5", "t": "빛이 어둠에 비치되 어둠이 깨닫지 못하더라"}, {"ref": "요한복음 1:6", "t": "하나님께로부터 보내심을 받은 사람이 있으니 그의 이름은 요한이라"}, {"ref": "요한복음 1:7", "t": "그가 증언하러 왔으니 곧 빛에 대하여 증언하고 모든 사람이 자기로 말미암아 믿게 하려 함이라"}, {"ref": "요한복음 1:8", "t": "그는 이 빛이 아니요 이 빛에 대하여 증언하러 온 자라"}]}, {"n": 21, "m": 12, "d": 19, "wk": 3, "theme": "기쁨", "title": "말씀이 육신이 되어", "ref": "요한복음 1:9-14", "key": 14, "vs": [{"ref": "요한복음 1:9", "t": "참 빛 곧 세상에 와서 각 사람에게 비추는 빛이 있었나니"}, {"ref": "요한복음 1:10", "t": "그가 세상에 계셨으며 세상은 그로 말미암아 지은 바 되었으되 세상이 그를 알지 못하였고"}, {"ref": "요한복음 1:11", "t": "자기 땅에 오매 자기 백성이 영접하지 아니하였으나"}, {"ref": "요한복음 1:12", "t": "영접하는 자 곧 그 이름을 믿는 자들에게는 하나님의 자녀가 되는 권세를 주셨으니"}, {"ref": "요한복음 1:13", "t": "이는 혈통으로나 육정으로나 사람의 뜻으로 나지 아니하고 오직 하나님께로부터 난 자들이니라"}, {"ref": "요한복음 1:14", "t": "말씀이 육신이 되어 우리 가운데 거하시매 우리가 그의 영광을 보니 아버지의 독생자의 영광이요 은혜와 진리가 충만하더라"}]}, {"n": 22, "m": 12, "d": 20, "wk": 4, "theme": "사랑", "title": "이처럼 사랑하사", "ref": "요한복음 3:16-19", "key": 16, "vs": [{"ref": "요한복음 3:16", "t": "하나님이 세상을 이처럼 사랑하사 독생자를 주셨으니 이는 그를 믿는 자마다 멸망하지 않고 영생을 얻게 하려 하심이라"}, {"ref": "요한복음 3:17", "t": "하나님이 그 아들을 세상에 보내신 것은 세상을 심판하려 하심이 아니요 그로 말미암아 세상이 구원을 받게 하려 하심이라"}, {"ref": "요한복음 3:18", "t": "그를 믿는 자는 심판을 받지 아니하는 것이요 믿지 아니하는 자는 하나님의 독생자의 이름을 믿지 아니하므로 벌써 심판을 받은 것이니라"}, {"ref": "요한복음 3:19", "t": "그 정죄는 이것이니 곧 빛이 세상에 왔으되 사람들이 자기 행위가 악하므로 빛보다 어둠을 더 사랑한 것이니라"}]}, {"n": 23, "m": 12, "d": 21, "wk": 4, "theme": "사랑", "title": "자기를 비우신 예수님", "ref": "빌립보서 2:5-11", "key": 7, "vs": [{"ref": "빌립보서 2:5", "t": "너희 안에 이 마음을 품으라 곧 그리스도 예수의 마음이니"}, {"ref": "빌립보서 2:6", "t": "그는 근본 하나님의 본체시나 하나님과 동등됨을 취할 것으로 여기지 아니하시고"}, {"ref": "빌립보서 2:7", "t": "오히려 자기를 비워 종의 형체를 가지사 사람들과 같이 되셨고"}, {"ref": "빌립보서 2:8", "t": "사람의 모양으로 나타나사 자기를 낮추시고 죽기까지 복종하셨으니 곧 십자가에 죽으심이라"}, {"ref": "빌립보서 2:9", "t": "이러므로 하나님이 그를 지극히 높여 모든 이름 위에 뛰어난 이름을 주사"}, {"ref": "빌립보서 2:10", "t": "하늘에 있는 자들과 땅에 있는 자들과 땅 아래에 있는 자들로 모든 무릎을 예수의 이름에 꿇게 하시고"}, {"ref": "빌립보서 2:11", "t": "모든 입으로 예수 그리스도를 주라 시인하여 하나님 아버지께 영광을 돌리게 하셨느니라"}]}, {"n": 24, "m": 12, "d": 22, "wk": 4, "theme": "사랑", "title": "때가 차매", "ref": "갈라디아서 4:4-7", "key": 4, "vs": [{"ref": "갈라디아서 4:4", "t": "때가 차매 하나님이 그 아들을 보내사 여자에게서 나게 하시고 율법 아래에 나게 하신 것은"}, {"ref": "갈라디아서 4:5", "t": "율법 아래에 있는 자들을 속량하시고 우리로 아들의 명분을 얻게 하려 하심이라"}, {"ref": "갈라디아서 4:6", "t": "너희가 아들이므로 하나님이 그 아들의 영을 우리 마음 가운데 보내사 아빠 아버지라 부르게 하셨느니라"}, {"ref": "갈라디아서 4:7", "t": "그러므로 네가 이 후로는 종이 아니요 아들이니 아들이면 하나님으로 말미암아 유업을 받을 자니라"}]}, {"n": 25, "m": 12, "d": 23, "wk": 4, "theme": "사랑", "title": "구유에 누이신 아기", "ref": "누가복음 2:1-7", "key": 7, "vs": [{"ref": "누가복음 2:1", "t": "그 때에 가이사 아구스도가 영을 내려 천하로 다 호적하라 하였으니"}, {"ref": "누가복음 2:2", "t": "이 호적은 구레뇨가 수리아 총독이 되었을 때에 처음 한 것이라"}, {"ref": "누가복음 2:3", "t": "모든 사람이 호적하러 각각 고향으로 돌아가매"}, {"ref": "누가복음 2:4", "t": "요셉도 다윗의 집 족속이므로 갈릴리 나사렛 동네에서 유대를 향하여 베들레헴이라 하는 다윗의 동네로"}, {"ref": "누가복음 2:5", "t": "그 약혼한 마리아와 함께 호적하러 올라가니 마리아가 이미 잉태하였더라"}, {"ref": "누가복음 2:6", "t": "거기 있을 그 때에 해산할 날이 차서"}, {"ref": "누가복음 2:7", "t": "첫아들을 낳아 강보로 싸서 구유에 뉘었으니 이는 여관에 있을 곳이 없음이러라"}]}, {"n": 26, "m": 12, "d": 24, "wk": 4, "theme": "사랑", "title": "목자들의 밤", "ref": "누가복음 2:8-14", "key": 11, "vs": [{"ref": "누가복음 2:8", "t": "그 지역에 목자들이 밤에 밖에서 자기 양 떼를 지키더니"}, {"ref": "누가복음 2:9", "t": "주의 사자가 곁에 서고 주의 영광이 그들을 두루 비추매 크게 무서워하는지라"}, {"ref": "누가복음 2:10", "t": "천사가 이르되 무서워하지 말라 보라 내가 온 백성에게 미칠 큰 기쁨의 좋은 소식을 너희에게 전하노라"}, {"ref": "누가복음 2:11", "t": "오늘 다윗의 동네에 너희를 위하여 구주가 나셨으니 곧 그리스도 주시니라"}, {"ref": "누가복음 2:12", "t": "너희가 가서 강보에 싸여 구유에 뉘어 있는 아기를 보리니 이것이 너희에게 표적이니라 하더니"}, {"ref": "누가복음 2:13", "t": "홀연히 수많은 천군이 그 천사와 함께 하나님을 찬송하여 이르되"}, {"ref": "누가복음 2:14", "t": "지극히 높은 곳에서는 하나님께 영광이요 땅에서는 하나님이 기뻐하신 사람들 중에 평화로다 하니라"}]}, {"n": 27, "m": 12, "d": 25, "wk": 4, "theme": "사랑", "title": "찾아가 보고 찬송하다", "ref": "누가복음 2:15-20", "key": 20, "vs": [{"ref": "누가복음 2:15", "t": "천사들이 떠나 하늘로 올라가니 목자가 서로 말하되 이제 베들레헴으로 가서 주께서 우리에게 알리신 바 이 이루어진 일을 보자 하고"}, {"ref": "누가복음 2:16", "t": "빨리 가서 마리아와 요셉과 구유에 누인 아기를 찾아서"}, {"ref": "누가복음 2:17", "t": "보고 천사가 자기들에게 이 아기에 대하여 말한 것을 전하니"}, {"ref": "누가복음 2:18", "t": "듣는 자가 다 목자들이 그들에게 말한 것들을 놀랍게 여기되"}, {"ref": "누가복음 2:19", "t": "마리아는 이 모든 말을 마음에 새기어 생각하니라"}, {"ref": "누가복음 2:20", "t": "목자들은 자기들에게 이르던 바와 같이 듣고 본 그 모든 것으로 인하여 하나님께 영광을 돌리고 찬송하며 돌아가니라"}]}];
+const CANDLE_SRC = {1:"img/candle1.webp",2:"img/candle2.webp",3:"img/candle3.webp",4:"img/candle4.webp"};
+const STAMP_IMGS = {a:"img/stamp_a.webp",b:"img/stamp_b.webp",c:"img/stamp_c.webp",full:"img/stamp_full.webp"};
+const WK_EN = {1:"HOPE",2:"PEACE",3:"JOY",4:"LOVE"};
+function pickDay(){
+  const q=new URLSearchParams(location.search).get("d") || (location.hash.match(/day-?(\d+)/)||[])[1];
+  if (q && +q>=1 && +q<=27) return +q;
+  // 주소에 날이 없으면 오늘(한국 시간) 날짜로
+  const now=new Date(Date.now()+9*3600e3), m=now.getUTCMonth()+1, d=now.getUTCDate();
+  const i=DAYS.findIndex(x=>x.m===m&&x.d===d);
+  return i>=0? i+1 : 1;
+}
+let n=pickDay(), D=DAYS[n-1];
+const TABS = ["자르기","빛","초점","색","넣기"];
+// 대림초: 1·2·4주 보라, 3주(기쁨) 분홍
+const CANDLE_OLD = [
+  {body:"#6a3d9a", hi:"#8e63c0", lo:"#3f1f66"},
+  {body:"#6a3d9a", hi:"#8e63c0", lo:"#3f1f66"},
+  {body:"#e48bb4", hi:"#f6b9d4", lo:"#b45b86"},
+  {body:"#6a3d9a", hi:"#8e63c0", lo:"#3f1f66"}
+];
+const keyIdxOf=DD=>Math.max(0, DD.vs.findIndex(v=>v.ref.endsWith(":"+DD.key)));
+let keyIdx=keyIdxOf(D);
+const DEF = {
+  tab:"자르기", ar:16/9, zoom:1, cx:512, cy:768,
+  bright:0, lx:.33, ly:.76, lamt:0, fx:.3, fy:.78, famt:0, preset:"원본",
+  show:{verse:true, ref:true, day:true, candle:true, logo:false, stamp:false, progress:false, tags:false},
+  stampType:"a", tag1:true, tag2:true, tagOwn:"",
+  vi:keyIdx, vtext:D.vs[keyIdx].t, font:"명조", tcolor:"#ffffff",
+  pos:{verse:[.5,.42], day:[.3,.075], candle:[.78,.085], logo:[.5,.965], stamp:[.76,.66], progress:[.5,.85], tags:[.5,.915]},
+  size:{verse:1, day:1, candle:1, logo:1, stamp:1, progress:1, tags:1},
+  sel:"verse"
+};
+DEF.size.verse=(()=>{const L=DEF.vtext.length;return L>90?.62:L>60?.72:L>35?.85:1;})();
+const S = JSON.parse(JSON.stringify(DEF));
+const PRESETS = {
+  "원본":{},
+  "새벽":{warm:8,sat:.92,fade:.10,tint:[255,186,150,.10]},
+  "촛불":{warm:28,sat:1.1,con:1.06,vig:.4},
+  "고요":{sat:0,con:1.1,fade:.06},
+  "겨울밤":{warm:-22,sat:.85,tint:[50,70,160,.14],vig:.2},
+  "기다림":{sat:.55,fade:.18,vig:.25}
+};
+const FONTS = {
+  "명조":{f:'"Noto Serif KR"',w:700,s:1},
+  "고딕":{f:'"Noto Sans KR"',w:700,s:1},
+  "고운바탕":{f:'"Gowun Batang"',w:700,s:1},
+  "손글씨":{f:'"Nanum Pen Script"',w:400,s:1.4},
+  "주아":{f:'"Jua"',w:400,s:1.05},
+  "송명":{f:'"Song Myung"',w:400,s:1.05}
+};
+const NAMES = {verse:"말씀", day:"날짜 · 주제", candle:"대림초", logo:"ON MINISTRY", stamp:"도장", progress:"진행 표시", tags:"해시태그"};
+const TAG1="#빛을기다리는27일", TAG2="#대림절묵상챌린지";
+const STAMPS={a:"둥근 도장", b:"별 배지", c:"리본", full:"27일 완주"};
+// 도장 그림(Codex) — 오면 img/stamp_a.webp 등으로 넣음. 없으면 임시 도장을 그림
+const STAMP_SRC = STAMP_IMGS;
+const SIMG={}; Object.keys(STAMP_SRC).forEach(k=>{const im=new Image(); im.onload=()=>render(); im.src=STAMP_SRC[k]; SIMG[k]=im;});
+// 내 기록(이 폰에만): 저장한 날
+const DONE_KEY="advent-done-v1";
+function loadDone(){ try{ return new Set(JSON.parse(localStorage.getItem(DONE_KEY)||"[]")); }catch(e){ return new Set(); } }
+function saveDone(set){ try{ localStorage.setItem(DONE_KEY, JSON.stringify([...set].sort((a,b)=>a-b))); }catch(e){} }
+let DONE=loadDone();
+const doneWithToday=()=>{const s2=new Set(DONE); s2.add(n); return s2;};
+const fullOK=()=>doneWithToday().size>=27;
+const $=s=>document.querySelector(s);
+const mk=(w,h)=>{const c=document.createElement("canvas");c.width=w;c.height=h;return c;};
+const esc=s=>(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;");
+
+const img=new Image(); let ready=false;
+img.onload=()=>{ready=true;render();thumbs();};
+img.onerror=()=>msg("그림을 불러오지 못했어요. 잠시 뒤 다시 열어 주세요.");
+const fitV=t=>{const L=(t||"").length;return L>90?.62:L>60?.72:L>35?.85:1;};
+function setDay(k,first){
+  n=k; D=DAYS[n-1]; keyIdx=keyIdxOf(D);
+  $("#hday").textContent=`DAY ${n} · ${D.m}월 ${D.d}일 · 대림절 ${D.wk}주 ${D.theme}`;
+  $("#htitle").textContent=D.title;
+  document.title=`대림절 말씀 배경화면 · DAY ${n}`;
+  $("#prev").disabled=n<=1; $("#next").disabled=n>=27;
+  if(!first){ S.vi=keyIdx; S.vtext=D.vs[keyIdx].t; S.size.verse=fitV(S.vtext); S.cx=512; S.cy=768; }
+  DEF.vi=keyIdx; DEF.vtext=D.vs[keyIdx].t; DEF.size.verse=fitV(DEF.vtext);
+  try{ history.replaceState(null,"","?d="+n); }catch(e){}
+  ready=false; img.src=`img/D${String(n).padStart(2,"0")}.jpg`;
+  if(!first){ panel(); }
+}
+
+/* ---------- 그림 ---------- */
+function cropRect(){
+  const iw=img.width, ih=img.height, ar=S.ar;
+  const w0=Math.min(iw, ih/ar), h0=w0*ar, cw=w0/S.zoom, ch=h0/S.zoom;
+  S.cx=Math.max(cw/2,Math.min(iw-cw/2,S.cx)); S.cy=Math.max(ch/2,Math.min(ih-ch/2,S.cy));
+  return {sx:S.cx-cw/2, sy:S.cy-ch/2, cw, ch};
+}
+let boxes={};
+function draw(out,W,opts={}){
+  const H=Math.round(W*S.ar); out.width=W; out.height=H;
+  const r=cropRect();
+  const base=mk(W,H), b=base.getContext("2d"); b.imageSmoothingQuality="high";
+  b.drawImage(img,r.sx,r.sy,r.cw,r.ch,0,0,W,H);
+  const P=PRESETS[opts.preset ?? S.preset];
+  pixel(b,W,H,P,S.bright);
+  const o=out.getContext("2d");
+  if (S.famt>0.01){
+    const s=1+S.famt*16, sw=Math.max(8,Math.round(W/s)), sh=Math.max(8,Math.round(H/s));
+    const sm=mk(sw,sh), sc=sm.getContext("2d"); sc.imageSmoothingQuality="high"; sc.drawImage(base,0,0,sw,sh);
+    const sm2=mk(Math.max(4,sw>>1),Math.max(4,sh>>1)); sm2.getContext("2d").drawImage(sm,0,0,sm2.width,sm2.height);
+    sc.clearRect(0,0,sw,sh); sc.drawImage(sm2,0,0,sw,sh);
+    o.imageSmoothingQuality="high"; o.drawImage(sm,0,0,W,H);
+    const sharp=mk(W,H), k=sharp.getContext("2d"); k.drawImage(base,0,0);
+    k.globalCompositeOperation="destination-in";
+    const x=S.fx*W,y=S.fy*H,R=Math.min(W,H)*.5, g=k.createRadialGradient(x,y,R*.25,x,y,R);
+    g.addColorStop(0,"rgba(0,0,0,1)"); g.addColorStop(1,"rgba(0,0,0,0)");
+    k.fillStyle=g; k.fillRect(0,0,W,H); o.drawImage(sharp,0,0);
+  } else o.drawImage(base,0,0);
+  if (P.vig){
+    const g=o.createRadialGradient(W/2,H/2,Math.min(W,H)*.3,W/2,H/2,Math.hypot(W,H)*.55);
+    g.addColorStop(0,"rgba(0,0,0,0)"); g.addColorStop(1,`rgba(10,5,25,${P.vig})`);
+    o.fillStyle=g; o.fillRect(0,0,W,H);
+  }
+  if (S.lamt>0.01){
+    const x=S.lx*W,y=S.ly*H,R=Math.min(W,H)*(.25+S.lamt*.5);
+    o.globalCompositeOperation="screen";
+    const g=o.createRadialGradient(x,y,0,x,y,R);
+    g.addColorStop(0,`rgba(255,214,140,${.85*S.lamt})`); g.addColorStop(.35,`rgba(255,180,90,${.45*S.lamt})`); g.addColorStop(1,"rgba(255,160,80,0)");
+    o.fillStyle=g; o.fillRect(0,0,W,H); o.globalCompositeOperation="source-over";
+  }
+  if (!opts.noText){
+    const bx={};
+    for (const k of ["candle","day","verse","progress","tags","stamp","logo"]) if (S.show[k]) bx[k]=element(o,W,H,k);
+    if (opts.guides){
+      for (const k in bx){const q=bx[k]; o.save(); o.setLineDash([W/90,W/120]); o.lineWidth=W/320;
+        o.strokeStyle=k===S.sel?"rgba(242,196,109,.95)":"rgba(255,255,255,.45)";
+        o.strokeRect(q.x-W/80,q.y-W/80,q.w+W/40,q.h+W/40); o.restore();}
+      boxes={}; for (const k in bx) boxes[k]={x:bx[k].x/W,y:bx[k].y/H,w:bx[k].w/W,h:bx[k].h/H};
+    }
+  }
+  if (opts.marker){
+    const x=opts.marker[0]*W,y=opts.marker[1]*H;
+    o.strokeStyle="rgba(255,255,255,.9)"; o.lineWidth=W/200;
+    o.beginPath(); o.arc(x,y,W/28,0,Math.PI*2); o.stroke();
+  }
+  return out;
+}
+function pixel(ctx,W,H,P,bright){
+  if (!bright && !Object.keys(P).some(k=>k!=="vig")) return;
+  const d=ctx.getImageData(0,0,W,H), a=d.data;
+  const sat=P.sat??1, con=P.con??1, warm=P.warm??0, fade=P.fade??0, t=P.tint;
+  for (let i=0;i<a.length;i+=4){
+    let r=a[i],g=a[i+1],b=a[i+2];
+    if (bright<0){const m=1+bright;r*=m;g*=m;b*=m;}
+    else if (bright>0){const m=bright*.75;r+=(255-r)*m;g+=(255-g)*m;b+=(255-b)*m;}
+    if (con!==1){r=(r-128)*con+128;g=(g-128)*con+128;b=(b-128)*con+128;}
+    if (sat!==1){const y=.299*r+.587*g+.114*b;r=y+(r-y)*sat;g=y+(g-y)*sat;b=y+(b-y)*sat;}
+    if (warm){r+=warm;g+=warm*.3;b-=warm;}
+    if (fade){r+=(1-r/255)*fade*110;g+=(1-g/255)*fade*110;b+=(1-b/255)*fade*110;}
+    if (t){r=r*(1-t[3])+t[0]*t[3];g=g*(1-t[3])+t[1]*t[3];b=b*(1-t[3])+t[2]*t[3];}
+    a[i]=r;a[i+1]=g;a[i+2]=b;
+  }
+  ctx.putImageData(d,0,0);
+}
+function wrap(o,txt,maxw){
+  const lines=[];
+  txt.split("\n").forEach(p=>{
+    const words=p.split(" "); let cur="";
+    for (const w of words){
+      const tryL=cur?cur+" "+w:w;
+      if (o.measureText(tryL).width<=maxw){cur=tryL;continue;}
+      if (cur) lines.push(cur);
+      if (o.measureText(w).width<=maxw){cur=w;continue;}
+      cur=""; for(const ch of w){ if(o.measureText(cur+ch).width>maxw&&cur){lines.push(cur);cur=ch;} else cur+=ch; }
+    }
+    lines.push(cur);
+  });
+  return lines;
+}
+// 요소 하나 그리기 → 그린 상자 돌려줌(캔버스 px)
+function element(o,W,H,k){
+  const U=W/100*S.size[k], [px,py]=S.pos[k], cx=px*W, cy=py*H, col=S.tcolor;
+  o.save(); o.textBaseline="middle"; o.fillStyle=col;
+  o.shadowColor="rgba(0,0,0,.55)"; o.shadowBlur=W/60;
+  let w=0,h=0;
+  if (k==="verse"){
+    const txt=(S.vtext||"").trim(); if(!txt){o.restore();return {x:cx-W*.2,y:cy-U*3,w:W*.4,h:U*6};}
+    const F=FONTS[S.font]||FONTS["명조"];
+    const fs=U*5.6*F.s, lh=fs*(F.s>1.2?1.25:1.5);
+    o.font=`${F.w} ${fs}px ${F.f}, serif`;
+    const lines=wrap(o,txt,W*.8);
+    const ref = S.vi>=0 && S.show.ref ? D.vs[S.vi].ref : "";
+    w=Math.max(...lines.map(l=>o.measureText(l).width));
+    const rfs=Math.max(W*.026,U*5.6*.46);
+    h=lines.length*lh+(ref?rfs*1.9:0);
+    const y0=cy-h/2; o.textAlign="center";
+    lines.forEach((l,i)=>o.fillText(l,cx,y0+lh*(i+.5)));
+    if (ref){o.font=`500 ${rfs}px "Noto Sans KR", sans-serif`;o.fillText(ref,cx,y0+lines.length*lh+rfs*.9);}
+  }
+  if (k==="day"){
+    const f1=U*3.1, f2=U*3;
+    o.font=`700 ${f1}px "Noto Sans KR", sans-serif`; const a=`ADVENT · DAY ${n}`, wa=o.measureText(a).width;
+    o.font=`500 ${f2}px "Noto Sans KR", sans-serif`; const bb=`${D.m}.${D.d} · 대림절 ${D.wk}주 ${D.theme}`, wb=o.measureText(bb).width;
+    w=Math.max(wa,wb); h=f1*1.3+f2*1.3;
+    const x0=cx-w/2, y0=cy-h/2; o.textAlign="left";
+    o.font=`700 ${f1}px "Noto Sans KR", sans-serif`; o.fillText(a,x0,y0+f1*.65);
+    o.font=`500 ${f2}px "Noto Sans KR", sans-serif`; o.fillText(bb,x0,y0+f1*1.3+f2*.65);
+  }
+  if (k==="stamp"){ o.shadowBlur=0; const r=stamp(o,cx,cy,U); w=r.w; h=r.h; }
+  if (k==="progress"){
+    const set=doneWithToday(), cnt=set.size, gap=U*2.75, r=U*.85, wkGap=U*1.4;
+    const fs=U*2.7; o.font=`700 ${fs}px "Noto Sans KR", sans-serif`; o.textAlign="center";
+    const label=`빛을 기다리는 27일 · ${cnt}일째`;
+    w=Math.max(o.measureText(label).width, gap*26+wkGap*3+r*2); h=fs*1.4+U*1.2+r*2;
+    const y0=cy-h/2; o.fillText(label,cx,y0+fs*.6);
+    const dy=y0+fs*1.4+U*1.2+r; let x=cx-(gap*26+wkGap*3)/2;
+    o.shadowBlur=W/120;
+    for(let d=1;d<=27;d++){
+      if(d===8||d===15||d===22) x+=wkGap;
+      o.beginPath(); o.arc(x,dy,r,0,Math.PI*2);
+      if(set.has(d)){ o.fillStyle=d===n?"#f2c46d":col; o.fill(); }
+      else { o.lineWidth=U*.28; o.strokeStyle=col; o.globalAlpha=.55; o.stroke(); o.globalAlpha=1; }
+      if(d===n){ o.lineWidth=U*.3; o.strokeStyle="#fff6dc"; o.beginPath(); o.arc(x,dy,r+U*.55,0,Math.PI*2); o.stroke(); }
+      x+=gap;
+    }
+    o.fillStyle=col;
+  }
+  if (k==="tags"){
+    const own=(S.tagOwn||"").split(/[\s,]+/).filter(Boolean).map(t=>t.startsWith("#")?t:"#"+t);
+    const list=[...(S.tag1?[TAG1]:[]),...(S.tag2?[TAG2]:[]),...own];
+    if(!list.length){o.restore();return {x:cx-W*.15,y:cy-U*2,w:W*.3,h:U*4};}
+    const fs=U*2.9; o.font=`500 ${fs}px "Noto Sans KR", sans-serif`; o.textAlign="center";
+    const lines=wrap(o,list.join(" "),W*.86), lh=fs*1.4;
+    w=Math.max(...lines.map(l=>o.measureText(l).width)); h=lines.length*lh;
+    lines.forEach((l,i)=>o.fillText(l,cx,cy-h/2+lh*(i+.5)));
+  }
+  if (k==="logo"){
+    const fs=U*2.6; o.font=`700 ${fs}px "Noto Sans KR", sans-serif`; o.textAlign="center";
+    o.globalAlpha=.9; const t="ON MINISTRY"; w=o.measureText(t).width; h=fs*1.3; o.fillText(t,cx,cy);
+  }
+  if (k==="candle"){ o.shadowBlur=0; const r=candles(o,cx,cy,U); w=r.w; h=r.h; }
+  o.restore();
+  return {x:cx-w/2,y:cy-h/2,w,h};
+}
+function stamp(o,cx,cy,U){
+  const t=(S.stampType==="full"&&!fullOK())?"a":S.stampType, R=U*10.5;
+  const im=SIMG[t];
+  o.save(); o.translate(cx,cy); o.rotate(t==="c"?0:-.12);
+  const hasImg=!!(im&&im.complete&&im.naturalWidth);
+  if (hasImg){ if(t==="c") o.drawImage(im,-R*2,-R,R*4,R*2); else o.drawImage(im,-R*1.25,-R*1.25,R*2.5,R*2.5); }
+  else { // 임시 도장 — Codex 그림이 오면 바뀜
+    const gold="#f2c46d", pink="#f6c6d8", ink=t==="b"?"#3a2a12":(t==="c"?"#5a2340":gold);
+    o.globalAlpha=.92;
+    if(t==="a"||t==="full"){
+      o.strokeStyle=t==="full"?pink:gold; o.lineWidth=U*.7; o.beginPath(); o.arc(0,0,R,0,Math.PI*2); o.stroke();
+      o.lineWidth=U*.3; o.beginPath(); o.arc(0,0,R*.82,0,Math.PI*2); o.stroke();
+    } else if(t==="b"){
+      o.fillStyle=gold; o.beginPath();
+      for(let i=0;i<16;i++){const a=i*Math.PI/8-Math.PI/2, rr=i%2?R*.82:R*1.05; o.lineTo(Math.cos(a)*rr,Math.sin(a)*rr);} o.closePath(); o.fill();
+    } else {
+      o.fillStyle=pink; const w2=R*1.35,h2=R*.62; o.beginPath();
+      o.moveTo(-w2-U*2,-h2); o.lineTo(w2+U*2,-h2); o.lineTo(w2,0); o.lineTo(w2+U*2,h2); o.lineTo(-w2-U*2,h2); o.lineTo(-w2,0); o.closePath(); o.fill();
+    }
+    o.globalAlpha=1;
+  }
+  // 글(늘 Claude가 얹음)
+  if (hasImg && t==="full"){ o.restore(); return {w:R*2.3,h:R*2.3}; }  // 완주 도장은 그림에 글자까지 있음
+  const ink= hasImg ? (t==="c"?"#5a2340":"#f5cf7a") : (t==="b"?"#3a2a12":t==="c"?"#5a2340":t==="full"?"#f6c6d8":"#f2c46d");
+  o.fillStyle=ink; o.textAlign="center"; o.textBaseline="middle";
+  o.shadowColor="rgba(0,0,0,.5)"; o.shadowBlur=(hasImg&&t!=="c")?U*.9:0;   // 속이 빈 도장 — 그림 위에서도 읽히게
+  const F=FONTS[S.font]||FONTS["명조"], ff=(px)=>`${F.w} ${px*F.s}px ${F.f}, sans-serif`;  // 말씀 글꼴을 따라감
+  if(t==="full"){
+    o.font=`700 ${U*5.2}px "Noto Serif KR", serif`; o.fillText("27일",0,-U*1.9);
+    o.font=`700 ${U*3.4}px "Noto Sans KR", sans-serif`; o.fillText("완주",0,U*2.6);
+  } else if(t==="c"){
+    o.font=ff(U*(hasImg?2.9:3.4)); o.fillText(`DAY ${n} · 묵상 완료`,0,U*.1);
+  } else {
+    o.font=ff(U*2.4); o.fillText(`DAY ${n}`,0,-U*3.3);
+    o.font=ff(U*3.6); o.fillText("묵상",0,-U*.1);
+    o.fillText("완료",0,U*3.6);
+  }
+  o.restore();
+  if(t==="c") return hasImg?{w:R*3.8,h:R*1.3}:{w:R*3.2,h:R*1.5};
+  return {w:R*2.3,h:R*2.3};
+}
+const CIMG={}; [1,2,3,4].forEach(w=>{const im=new Image(); im.onload=()=>render(); im.src=CANDLE_SRC[w]; CIMG[w]=im;});
+// 불꽃 자리(900×600 그림 기준)
+const FLAMES=[[196,169],[368,168],[535,169],[702,169]];
+function candles(o,cx,cy,U){
+  const w=D.wk, im=CIMG[w], cw=U*30, ch=cw*2/3, x0=cx-cw/2, y0=cy-ch/2;
+  if (im && im.complete && im.naturalWidth){
+    // 빛 번짐은 그림 안에 들어 있음(11-16 수채 대림초 v2)
+    o.drawImage(im,x0,y0,cw,ch);
+  }
+  return {w:cw*.86, h:ch*.8};
+}
+
+/* ---------- 화면 ---------- */
+const cv=$("#cv"), stg=$("#stage"); let raf=0;
+function render(){
+  if(!ready) return;
+  cancelAnimationFrame(raf);
+  raf=requestAnimationFrame(()=>{
+    const marker=S.tab==="빛"?[S.lx,S.ly]:S.tab==="초점"?[S.fx,S.fy]:null;
+    draw(cv,640,{marker,guides:S.tab==="넣기"});
+  });
+}
+function thumbs(){ if(!ready) return; document.querySelectorAll("[data-thumb]").forEach(c=>draw(c,170,{preset:c.dataset.thumb,noText:true})); }
+function hint(t){const h=$("#hint");h.textContent=t;h.style.opacity=t?1:0;}
+function tabs(){
+  $("#tabs").innerHTML=TABS.map(t=>`<button class="${S.tab===t?'on':''}" data-tab="${t}">${t}</button>`).join("");
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;tabs();panel();render();});
+}
+const chip=(attr,val,label,on)=>`<button class="chip ${on?'on':''}" data-${attr}="${val}">${label}</button>`;
+function panel(){
+  let h="";
+  if (S.tab==="자르기"){ hint("그림을 끌어서 옮겨 보세요");
+    h=`<div class="lead">비율</div><div class="chips">${[["1:1",1],["4:5",1.25],["9:16",16/9]].map(([nn,v])=>chip("ar",v,nn,Math.abs(S.ar-v)<.001)).join("")}</div>
+      <div class="row"><label>가까이</label><input type="range" id="zoom" min="1" max="3.5" step=".01" value="${S.zoom}"></div>`;}
+  if (S.tab==="빛"){ hint("빛을 두고 싶은 곳을 눌러 보세요");
+    h=`<div class="row"><label>어둠 · 밝음</label><input type="range" id="bright" min="-.7" max=".5" step=".01" value="${S.bright}"></div>
+      <div class="row"><label>빛 더하기</label><input type="range" id="lamt" min="0" max="1" step=".01" value="${S.lamt}"></div>`;}
+  if (S.tab==="초점"){ hint("또렷하게 볼 곳을 눌러 보세요");
+    h=`<div class="row"><label>흐리게</label><input type="range" id="famt" min="0" max="1" step=".01" value="${S.famt}"></div>`;}
+  if (S.tab==="색"){ hint("");
+    h=`<div class="sw">${Object.keys(PRESETS).map(nn=>`<button class="${S.preset===nn?'on':''}" data-p="${nn}"><canvas data-thumb="${nn}"></canvas><span>${nn}</span></button>`).join("")}</div>`;}
+  if (S.tab==="넣기"){ hint("글씨를 끌어서 옮길 수 있어요");
+    const T=[["verse","말씀"],["ref","장절"],["day","날짜 · 주제"],["candle","대림초"],["stamp","묵상 완료 도장"],["progress","진행 표시"],["tags","해시태그"],["logo","ON MINISTRY"]];
+    h=`<div class="lead">그림에 넣을 것</div>
+      <div class="tg">${T.map(([k,nn])=>`<button class="${S.show[k]?'on':''}" data-show="${k}"><i></i>${nn}</button>`).join("")}</div>
+      <div class="sec">크기 · <span id="selname">${NAMES[S.sel]}</span></div>
+      <div class="small">그림 속 글씨나 대림초를 누르면 그것의 크기를 바꿀 수 있어요.</div>
+      <div class="row"><label>크기</label><input type="range" id="esize" min=".5" max="1.8" step=".01" value="${S.size[S.sel]}"></div>
+      <div id="vopts" class="${S.show.verse?'':'hide'}">
+        <div class="sec">오늘 말씀에서 고르기</div>
+        <div class="vlist">${D.vs.map((v,i)=>`<button class="${S.vi===i?'on':''}" data-vi="${i}"><b>${v.ref}</b>${esc(v.t)}</button>`).join("")}
+          <button class="${S.vi===-1?'on':''}" data-vi="-1"><b>내 글</b>직접 써서 넣기</button></div>
+        <div class="small">고른 말씀은 아래에서 줄을 나누거나 필요한 부분만 남길 수 있어요.</div>
+        <textarea rows="3" id="vtext">${esc(S.vtext)}</textarea>
+        <div class="sec">글꼴</div>
+        <div class="chips">${Object.keys(FONTS).map(nn=>`<button class="chip ${S.font===nn?'on':''}" data-font="${nn}" style="font-family:${FONTS[nn].f};font-weight:${FONTS[nn].w};font-size:${15*FONTS[nn].s}px">${nn}</button>`).join("")}</div>
+      </div>
+      <div id="sopts" class="${S.show.stamp?'':'hide'}">
+        <div class="sec">도장</div>
+        <div class="chips">${Object.keys(STAMPS).map(k=>{const dis=k==="full"&&!fullOK();return `<button class="chip ${S.stampType===k?'on':''}" data-st="${k}" ${dis?'disabled style="opacity:.4"':''}>${STAMPS[k]}${k==="full"?` (${doneWithToday().size}/27)`:''}</button>`;}).join("")}</div>
+        <div class="small">27일을 모두 채우면 「27일 완주」 도장이 열려요.</div>
+      </div>
+      <div id="topts" class="${S.show.tags?'':'hide'}">
+        <div class="sec">해시태그</div>
+        <div class="chips"><button class="chip ${S.tag1?'on':''}" data-tag="tag1">${TAG1}</button><button class="chip ${S.tag2?'on':''}" data-tag="tag2">${TAG2}</button></div>
+        <input type="text" id="tagown" value="${esc(S.tagOwn)}" placeholder="내 해시태그 (예: 은파교회 중고등부)" style="width:100%;background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 12px;font-size:15px;font-family:inherit">
+      </div>
+      <div class="small" style="margin-top:12px">내 기록: ${doneWithToday().size}/27일 — 저장할 때마다 이 폰에 그날이 기록돼요.</div>
+      <div class="sec">글자 색</div>
+      <div class="chips">${[["#ffffff","흰색"],["#f2c46d","금빛"],["#f6c6d8","연분홍"],["#2a1f55","진보라"]].map(([v,nn])=>chip("col",v,nn,S.tcolor===v)).join("")}</div>`;}
+  $("#panel").innerHTML=h; bind(); if (S.tab==="색") thumbs();
+}
+function bind(){
+  const P=$("#panel");
+  ["zoom","bright","lamt","famt"].forEach(id=>{const e=$("#"+id);if(e)e.oninput=()=>{S[id]=+e.value;render();};});
+  const es=$("#esize"); if(es) es.oninput=()=>{S.size[S.sel]=+es.value;render();};
+  P.querySelectorAll("[data-ar]").forEach(b=>b.onclick=()=>{S.ar=+b.dataset.ar;panel();render();});
+  P.querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{S.preset=b.dataset.p;P.querySelectorAll("[data-p]").forEach(x=>x.classList.toggle("on",x===b));render();});
+  P.querySelectorAll("[data-show]").forEach(b=>b.onclick=()=>{const k=b.dataset.show;S.show[k]=!S.show[k];b.classList.toggle("on",S.show[k]);if(k==="verse")$("#vopts").classList.toggle("hide",!S.show.verse);if(k==="stamp"){$("#sopts").classList.toggle("hide",!S.show.stamp);if(S.show.stamp)select("stamp");}if(k==="tags")$("#topts").classList.toggle("hide",!S.show.tags);if(k==="progress"&&S.show.progress)select("progress");render();});
+  P.querySelectorAll("[data-vi]").forEach(b=>b.onclick=()=>{S.vi=+b.dataset.vi;S.vtext=S.vi>=0?D.vs[S.vi].t:"";$("#vtext").value=S.vtext;
+    S.size.verse=fitSize(S.vtext);
+    P.querySelectorAll("[data-vi]").forEach(x=>x.classList.toggle("on",x===b));select("verse");render();});
+  const vt=$("#vtext"); if(vt) vt.oninput=()=>{S.vtext=vt.value;render();};
+  P.querySelectorAll("[data-font]").forEach(b=>b.onclick=()=>{S.font=b.dataset.font;const F=FONTS[S.font];
+    P.querySelectorAll("[data-font]").forEach(x=>x.classList.toggle("on",x===b));render();
+    document.fonts&&document.fonts.load(`${F.w} 40px ${F.f}`,"가나다").then(render).catch(()=>{});});
+  P.querySelectorAll("[data-st]").forEach(b=>b.onclick=()=>{S.stampType=b.dataset.st;P.querySelectorAll("[data-st]").forEach(x=>x.classList.toggle("on",x===b));select("stamp");render();});
+  P.querySelectorAll("[data-tag]").forEach(b=>b.onclick=()=>{const k=b.dataset.tag;S[k]=!S[k];b.classList.toggle("on",S[k]);render();});
+  const tw=$("#tagown"); if(tw) tw.oninput=()=>{S.tagOwn=tw.value;render();};
+  P.querySelectorAll("[data-col]").forEach(b=>b.onclick=()=>{S.tcolor=b.dataset.col;P.querySelectorAll("[data-col]").forEach(x=>x.classList.toggle("on",x===b));render();});
+}
+function fitSize(t){const L=(t||"").length; return L>90?.62:L>60?.72:L>35?.85:1;}
+function select(k){ S.sel=k; const s=$("#selname"); if(s) s.textContent=NAMES[k]; const es=$("#esize"); if(es) es.value=S.size[k]; }
+
+// 그림 위 손가락 조작
+let drag=null;
+function norm(e){const b=stg.getBoundingClientRect();return [(e.clientX-b.left)/b.width,(e.clientY-b.top)/b.height];}
+function hit(x,y){
+  const order=["stamp","tags","progress","logo","verse","day","candle"]; const pad=.03;
+  for (const k of order){const q=boxes[k]; if(q&&x>=q.x-pad&&x<=q.x+q.w+pad&&y>=q.y-pad&&y<=q.y+q.h+pad) return k;}
+  return null;
+}
+stg.onpointerdown=e=>{
+  stg.setPointerCapture(e.pointerId); hint("");
+  const [x,y]=norm(e);
+  if (S.tab==="자르기") drag={mode:"pan",x:e.clientX,y:e.clientY};
+  else if (S.tab==="빛"||S.tab==="초점"){drag={mode:"tap"}; setPoint(x,y);}
+  else if (S.tab==="넣기"){ const k=hit(x,y); if(k){select(k);drag={mode:"move",k,x,y};render();} }
+};
+stg.onpointermove=e=>{
+  if(!drag) return;
+  const [x,y]=norm(e);
+  if (drag.mode==="tap") return setPoint(x,y);
+  if (drag.mode==="pan"){const r=cropRect(),k=r.cw/stg.clientWidth;S.cx-=(e.clientX-drag.x)*k;S.cy-=(e.clientY-drag.y)*k;drag.x=e.clientX;drag.y=e.clientY;render();return;}
+  if (drag.mode==="move"){
+    const p=S.pos[drag.k]; p[0]=Math.max(.02,Math.min(.98,p[0]+x-drag.x)); p[1]=Math.max(.02,Math.min(.98,p[1]+y-drag.y));
+    drag.x=x; drag.y=y;
+    if (Math.abs(p[0]-.5)<.015) p[0]=.5;  // 가운데에 붙기
+    render();
+  }
+};
+stg.onpointerup=stg.onpointercancel=()=>drag=null;
+function setPoint(x,y){
+  if (S.tab==="빛"){S.lx=x;S.ly=y;if(S.lamt<.05){S.lamt=.6;$("#lamt").value=.6;}}
+  else {S.fx=x;S.fy=y;if(S.famt<.05){S.famt=.5;$("#famt").value=.5;}}
+  render();
+}
+
+function record(){ DONE.add(n); saveDone(DONE); if(S.tab==="넣기") panel(); render(); }
+function msg(t){$("#msg").textContent=t;}
+$("#reset").onclick=()=>{const t=S.tab;Object.assign(S,JSON.parse(JSON.stringify(DEF)));S.tab=t;tabs();panel();render();msg("");};
+$("#close").onclick=()=>$("#sheet").classList.add("hide");
+$("#save").onclick=async()=>{
+  if(!ready) return;
+  const c=mk(1,1); draw(c,1080,{});
+  const blob=await new Promise(r=>c.toBlob(r,"image/jpeg",.93));
+  const nm=S.ar>1.5?"배경화면":S.ar>1.1?"피드":"정사각";
+  const name=`대림절_DAY${String(n).padStart(2,"0")}_${nm}.jpg`;
+  const file=new File([blob],name,{type:"image/jpeg"});
+  const mobile=/iPhone|iPad|Android/i.test(navigator.userAgent);
+  if (mobile && navigator.canShare && navigator.canShare({files:[file]})){
+    try{ await navigator.share({files:[file]}); record(); msg(`오늘 묵상을 기록했어요 (${DONE.size}/27). 「이미지 저장」을 눌러 사진첩에 넣어요.`); return; }
+    catch(e){ if(e&&e.name==="AbortError"){ msg(""); return; } }
+  }
+  if (!mobile){
+    const u=URL.createObjectURL(blob), a=document.createElement("a");
+    a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(u),4000); record(); msg(`내려받았어요. 오늘 묵상을 기록했어요 (${DONE.size}/27).`); return;
+  }
+  $("#final").src=URL.createObjectURL(blob); $("#sheet").classList.remove("hide"); record();
+};
+$("#prev").onclick=()=>{ if(n>1) setDay(n-1); };
+$("#next").onclick=()=>{ if(n<27) setDay(n+1); };
+setDay(n,true);
+document.fonts && document.fonts.load('700 40px "Noto Serif KR"').then(render).catch(()=>{});
+tabs(); panel(); render();
+</script>
+</body>
+</html>
