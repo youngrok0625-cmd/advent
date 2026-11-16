@@ -20,6 +20,7 @@ header{margin:2px 2px 12px}
 header .day{font-size:12px;letter-spacing:.14em;color:var(--gold)}
 header h1{font-family:"Noto Serif KR",serif;font-size:20px;margin:4px 0 2px}
 header p{margin:0;font-size:13px;color:var(--sub)}
+.tonote{color:var(--gold);font-weight:700;text-decoration:none;white-space:nowrap}
 .stage{position:relative;border-radius:14px;overflow:hidden;background:#000;touch-action:none;user-select:none;margin:0 auto}
 .stage canvas{display:block;width:100%;height:auto}
 .hint{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-size:12px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.8);pointer-events:none;transition:opacity .4s}
@@ -75,7 +76,7 @@ footer a{color:var(--gold);text-decoration:none;font-weight:700}
   <header>
     <div class="dnav"><button id="prev" aria-label="이전 날">‹</button><div class="day" id="hday"></div><button id="next" aria-label="다음 날">›</button></div>
     <h1 id="htitle"></h1>
-    <p>오늘의 그림으로 나만의 배경화면 · 스토리를 만들어요.</p>
+    <p>오늘의 그림으로 나만의 배경화면 · 스토리를 만들어요. <a class="tonote" id="tonote" href="note/">오늘 묵상하기 →</a></p>
   </header>
   <div class="stage" id="stage"><canvas id="cv"></canvas><div class="hint" id="hint"></div></div>
   <div class="tabs" id="tabs"></div>
@@ -166,6 +167,7 @@ function setDay(k,first){
   n=k; D=DAYS[n-1]; keyIdx=keyIdxOf(D);
   $("#hday").textContent=`DAY ${n} · ${D.m}월 ${D.d}일 · 대림절 ${D.wk}주 ${D.theme}`;
   $("#htitle").textContent=D.title;
+  $("#tonote").href=`note/?d=${n}`;
   document.title=`대림절 말씀 배경화면 · DAY ${n}`;
   $("#prev").disabled=n<=1; $("#next").disabled=n>=27;
   if(!first){ S.vi=keyIdx; S.vtext=D.vs[keyIdx].t; S.size.verse=fitV(S.vtext); S.cx=512; S.cy=768; }
